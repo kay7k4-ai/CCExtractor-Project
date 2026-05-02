@@ -425,7 +425,7 @@ class _SingleTestPageState extends State<SingleTestPage> {
     });
     try {
       final req = http.MultipartRequest(
-          'POST', Uri.parse('http://127.0.0.1:8000/run-test'));
+          'POST', Uri.parse('https://ccextractor-backend.onrender.com//run-test'));
       req.files.add(http.MultipartFile.fromBytes('file', _file!.bytes!,
           filename: _file!.name));
       final res = await req.send();
@@ -545,7 +545,7 @@ class _BatchTestPageState extends State<BatchTestPage> {
     });
     try {
       final req = http.MultipartRequest(
-          'POST', Uri.parse('http://127.0.0.1:8000/run-batch'));
+          'POST', Uri.parse('https://ccextractor-backend.onrender.com//run-batch'));
       for (final f in _files) {
         req.files.add(http.MultipartFile.fromBytes('files', f.bytes!,
             filename: f.name));
@@ -667,7 +667,7 @@ class _ResultsPageState extends State<ResultsPage> {
       _error = null;
     });
     try {
-      final res = await http.get(Uri.parse('http://127.0.0.1:8000/results'));
+      final res = await http.get(Uri.parse('https://ccextractor-backend.onrender.com//results'));
       final data = jsonDecode(res.body);
       setState(() {
         _results = data is List ? data : [];
@@ -701,7 +701,7 @@ class _ResultsPageState extends State<ResultsPage> {
     });
     try {
       final res =
-          await http.get(Uri.parse('http://127.0.0.1:8000/results/$id'));
+          await http.get(Uri.parse('https://ccextractor-backend.onrender.com//results/$id'));
       final data = jsonDecode(res.body);
       if (data['error'] != null) {
         setState(() {
