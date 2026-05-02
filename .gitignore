@@ -1,0 +1,42 @@
+# ─── FLUTTER ─────────────────────────────────────
+.build/
+.dart_tool/
+.packages
+pubspec.lock
+ios/Pods/
+ios/.symlinks/
+android/.gradle/
+android/app/build/
+build/
+
+# Flutter generated
+**/generated_plugin_registrant.dart
+
+# ─── VS CODE / IDE ───────────────────────────────
+.vscode/
+.idea/
+*.iml
+
+# ─── MAC ────────────────────────────────────────
+.DS_Store
+
+# ─── PYTHON BACKEND ─────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+.env.*
+*.log
+
+# ─── FILE UPLOADS / TEMP ────────────────────────
+uploads/
+temp/
+*.mp4
+*.mkv
+*.ts
+
+# ─── NODE (if applicable) ───────────────────────
+node_modules/
+npm-debug.log
