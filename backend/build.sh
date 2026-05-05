@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# install python dependencies
+set -o errexit  # stop on error
+
 pip install -r requirements.txt
 
 # install ccextractor

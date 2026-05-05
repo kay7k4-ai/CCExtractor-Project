@@ -4,6 +4,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔧 CONFIG — change this ONE line when deploying
+// Local:    'http://127.0.0.1:8000'
+// Deployed: 'https://your-app.onrender.com'
+const String kBaseUrl = 'http://127.0.0.1:8000';
+// ─────────────────────────────────────────────────────────────────────────────
+
 void main() {
   runApp(const CCExtractorApp());
 }
@@ -31,9 +38,7 @@ class AppColors {
   static const surface = Color(0xFF0E1318);
   static const surfaceHigh = Color(0xFF141A22);
   static const border = Color(0xFF1E2730);
-  static const borderHigh = Color(0xFF2A3540);
   static const accent = Color(0xFF00D4FF);
-  static const accentDim = Color(0xFF0099BB);
   static const green = Color(0xFF00E676);
   static const red = Color(0xFFFF3D57);
   static const textPrimary = Color(0xFFE8EDF2);
@@ -104,7 +109,7 @@ class _DashboardPageState extends State<DashboardPage> {
             onPressed: () {
               AppState.resetAll();
               Navigator.pop(ctx);
-              setState(() {}); // trigger rebuild
+              setState(() {});
               ScaffoldMessenger.of(context).showSnackBar(
                 _snackBar('Session cleared. Fresh start!', AppColors.accent),
               );
@@ -132,46 +137,41 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Logo area
                 Container(
                   padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
                   decoration: const BoxDecoration(
-                    border: Border(bottom: BorderSide(color: AppColors.border)),
+                    border:
+                        Border(bottom: BorderSide(color: AppColors.border)),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Row(
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: AppColors.accent.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: AppColors.accent.withOpacity(0.3)),
+                        ),
+                        child: const Icon(Icons.closed_caption,
+                            color: AppColors.accent, size: 18),
+                      ),
+                      const SizedBox(width: 10),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: AppColors.accent.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: AppColors.accent.withOpacity(0.3)),
-                            ),
-                            child: const Icon(Icons.closed_caption,
-                                color: AppColors.accent, size: 18),
-                          ),
-                          const SizedBox(width: 10),
-                          const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('CCExtractor',
-                                  style: TextStyle(
-                                      color: AppColors.textPrimary,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 0.3)),
-                              Text('Regression Suite',
-                                  style: TextStyle(
-                                      color: AppColors.textSecondary,
-                                      fontSize: 10,
-                                      letterSpacing: 0.5)),
-                            ],
-                          ),
+                          Text('CCExtractor',
+                              style: TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.3)),
+                          Text('Regression Suite',
+                              style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 10,
+                                  letterSpacing: 0.5)),
                         ],
                       ),
                     ],
@@ -180,7 +180,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 const SizedBox(height: 12),
 
-                // Nav items
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
@@ -214,9 +213,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 const Spacer(),
 
-                // Status indicator
+                // Backend URL indicator
                 Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -240,26 +239,33 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Backend',
-                                style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 10)),
-                            Text('localhost:8000',
-                                style: TextStyle(
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Backend',
+                                  style: TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 10)),
+                              Text(
+                                kBaseUrl.replaceAll('http://', '').replaceAll('https://', ''),
+                                style: const TextStyle(
                                     color: AppColors.textPrimary,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500)),
-                          ],
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
 
-                // Reset button
+                const SizedBox(height: 8),
+
+                // Reset session button
                 Padding(
                   padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
                   child: SizedBox(
@@ -425,7 +431,7 @@ class _SingleTestPageState extends State<SingleTestPage> {
     });
     try {
       final req = http.MultipartRequest(
-          'POST', Uri.parse('https://ccextractor-backend.onrender.com//run-test'));
+          'POST', Uri.parse('$kBaseUrl/run-test'));
       req.files.add(http.MultipartFile.fromBytes('file', _file!.bytes!,
           filename: _file!.name));
       final res = await req.send();
@@ -454,15 +460,12 @@ class _SingleTestPageState extends State<SingleTestPage> {
           : null,
       child: Column(
         children: [
-          // Upload zone
           _UploadZone(
             file: _file,
             onTap: _pick,
             onClear: _file != null ? () => setState(() => _file = null) : null,
           ),
           const SizedBox(height: 16),
-
-          // Run button
           SizedBox(
             width: double.infinity,
             child: _PrimaryButton(
@@ -473,7 +476,6 @@ class _SingleTestPageState extends State<SingleTestPage> {
               onTap: _run,
             ),
           ),
-
           if (_error != null) ...[
             const SizedBox(height: 16),
             _ErrorBanner(message: _error!),
@@ -545,7 +547,7 @@ class _BatchTestPageState extends State<BatchTestPage> {
     });
     try {
       final req = http.MultipartRequest(
-          'POST', Uri.parse('https://ccextractor-backend.onrender.com//run-batch'));
+          'POST', Uri.parse('$kBaseUrl/run-batch'));
       for (final f in _files) {
         req.files.add(http.MultipartFile.fromBytes('files', f.bytes!,
             filename: f.name));
@@ -580,7 +582,6 @@ class _BatchTestPageState extends State<BatchTestPage> {
           : null,
       child: Column(
         children: [
-          // File list
           if (_files.isNotEmpty) ...[
             _FileListCard(
               files: _files,
@@ -589,15 +590,14 @@ class _BatchTestPageState extends State<BatchTestPage> {
             ),
             const SizedBox(height: 12),
           ],
-
-          // Add files + run row
           Row(
             children: [
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _addFiles,
                   icon: const Icon(Icons.add_rounded, size: 16),
-                  label: Text(_files.isEmpty ? 'Select Files' : 'Add More'),
+                  label:
+                      Text(_files.isEmpty ? 'Select Files' : 'Add More'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.textSecondary,
                     side: const BorderSide(color: AppColors.border),
@@ -622,7 +622,6 @@ class _BatchTestPageState extends State<BatchTestPage> {
               ],
             ],
           ),
-
           if (_error != null) ...[
             const SizedBox(height: 16),
             _ErrorBanner(message: _error!),
@@ -667,7 +666,8 @@ class _ResultsPageState extends State<ResultsPage> {
       _error = null;
     });
     try {
-      final res = await http.get(Uri.parse('https://ccextractor-backend.onrender.com//results'));
+      final res =
+          await http.get(Uri.parse('$kBaseUrl/results'));
       final data = jsonDecode(res.body);
       setState(() {
         _results = data is List ? data : [];
@@ -700,8 +700,8 @@ class _ResultsPageState extends State<ResultsPage> {
       _lookupError = null;
     });
     try {
-      final res =
-          await http.get(Uri.parse('https://ccextractor-backend.onrender.com//results/$id'));
+      final res = await http
+          .get(Uri.parse('$kBaseUrl/results/$id'));
       final data = jsonDecode(res.body);
       if (data['error'] != null) {
         setState(() {
@@ -747,7 +747,6 @@ class _ResultsPageState extends State<ResultsPage> {
       ),
       child: Column(
         children: [
-          // Lookup card
           _GlassCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -787,10 +786,7 @@ class _ResultsPageState extends State<ResultsPage> {
               ],
             ),
           ),
-
           const SizedBox(height: 16),
-
-          // History table
           _GlassCard(
             padding: EdgeInsets.zero,
             child: Column(
@@ -799,9 +795,7 @@ class _ResultsPageState extends State<ResultsPage> {
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      const Expanded(
-                        child: _Label('History'),
-                      ),
+                      const Expanded(child: _Label('History')),
                       SizedBox(
                         width: 200,
                         child: _StyledTextField(
@@ -810,7 +804,8 @@ class _ResultsPageState extends State<ResultsPage> {
                           onSubmit: (_) => setState(() {}),
                           onChanged: (_) => setState(() {}),
                           prefix: const Icon(Icons.search_rounded,
-                              size: 14, color: AppColors.textSecondary),
+                              size: 14,
+                              color: AppColors.textSecondary),
                         ),
                       ),
                     ],
@@ -878,7 +873,8 @@ class _ResultsPageState extends State<ResultsPage> {
   }
 }
 
-// ─── PAGE SHELL ────────────────────────────────────────────────────────────────
+// ─── REUSABLE WIDGETS ──────────────────────────────────────────────────────────
+
 class _PageShell extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -938,7 +934,6 @@ class _PageShell extends StatelessWidget {
   }
 }
 
-// ─── UPLOAD ZONE ───────────────────────────────────────────────────────────────
 class _UploadZone extends StatelessWidget {
   final PlatformFile? file;
   final VoidCallback onTap;
@@ -987,8 +982,7 @@ class _UploadZone extends StatelessWidget {
                 hasFile
                     ? Icons.check_circle_outline_rounded
                     : Icons.upload_file_rounded,
-                color:
-                    hasFile ? AppColors.green : AppColors.textSecondary,
+                color: hasFile ? AppColors.green : AppColors.textSecondary,
                 size: 24,
               ),
             ),
@@ -1007,15 +1001,13 @@ class _UploadZone extends StatelessWidget {
             if (!hasFile) ...[
               const SizedBox(height: 4),
               const Text('.mp4  .mkv  .ts  .mpg  .srt',
-                  style: TextStyle(
-                      color: AppColors.textDim, fontSize: 11)),
+                  style:
+                      TextStyle(color: AppColors.textDim, fontSize: 11)),
             ],
             if (hasFile && onClear != null) ...[
               const SizedBox(height: 10),
               GestureDetector(
-                onTap: () {
-                  onClear!();
-                },
+                onTap: onClear,
                 child: const Text('✕  Remove file',
                     style: TextStyle(
                         color: AppColors.textSecondary, fontSize: 11)),
@@ -1028,7 +1020,6 @@ class _UploadZone extends StatelessWidget {
   }
 }
 
-// ─── FILE LIST CARD ────────────────────────────────────────────────────────────
 class _FileListCard extends StatelessWidget {
   final List<PlatformFile> files;
   final Function(int) onRemove;
@@ -1049,7 +1040,8 @@ class _FileListCard extends StatelessWidget {
                 const Icon(Icons.folder_open_rounded,
                     size: 14, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
-                _Label('${files.length} file${files.length > 1 ? 's' : ''} selected'),
+                _Label(
+                    '${files.length} file${files.length > 1 ? 's' : ''} selected'),
               ],
             ),
           ),
@@ -1080,7 +1072,8 @@ class _FileListCard extends StatelessWidget {
                       GestureDetector(
                         onTap: () => onRemove(i),
                         child: const Icon(Icons.close_rounded,
-                            size: 14, color: AppColors.textSecondary),
+                            size: 14,
+                            color: AppColors.textSecondary),
                       ),
                     ],
                   ),
@@ -1094,7 +1087,6 @@ class _FileListCard extends StatelessWidget {
   }
 }
 
-// ─── SINGLE RESULT CARD ────────────────────────────────────────────────────────
 class _SingleResultCard extends StatelessWidget {
   final Map<String, dynamic> result;
   const _SingleResultCard({required this.result});
@@ -1146,7 +1138,6 @@ class _SingleResultCard extends StatelessWidget {
   }
 }
 
-// ─── BATCH RESULT CARD ─────────────────────────────────────────────────────────
 class _BatchResultCard extends StatelessWidget {
   final Map<String, dynamic> result;
   const _BatchResultCard({required this.result});
@@ -1166,13 +1157,19 @@ class _BatchResultCard extends StatelessWidget {
           const SizedBox(height: 14),
           Row(
             children: [
-              _MetricTile(label: 'Total', value: '$total',
+              _MetricTile(
+                  label: 'Total',
+                  value: '$total',
                   color: AppColors.textSecondary),
               const SizedBox(width: 10),
-              _MetricTile(label: 'Passed', value: '$passed',
+              _MetricTile(
+                  label: 'Passed',
+                  value: '$passed',
                   color: AppColors.green),
               const SizedBox(width: 10),
-              _MetricTile(label: 'Failed', value: '$failed',
+              _MetricTile(
+                  label: 'Failed',
+                  value: '$failed',
                   color: AppColors.red),
             ],
           ),
@@ -1211,7 +1208,6 @@ class _BatchResultCard extends StatelessWidget {
   }
 }
 
-// ─── LOOKUP RESULT TILE ────────────────────────────────────────────────────────
 class _LookupResultTile extends StatelessWidget {
   final Map<String, dynamic> result;
   const _LookupResultTile({required this.result});
@@ -1246,18 +1242,21 @@ class _LookupResultTile extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           _DetailRow(
-              label: 'ID', value: result['id']?.toString() ?? '-', mono: true),
+              label: 'ID',
+              value: result['id']?.toString() ?? '-',
+              mono: true),
           _DetailRow(
-              label: 'Missing', value: result['missing']?.toString() ?? '[]'),
+              label: 'Missing',
+              value: result['missing']?.toString() ?? '[]'),
           _DetailRow(
-              label: 'Extra', value: result['extra']?.toString() ?? '[]'),
+              label: 'Extra',
+              value: result['extra']?.toString() ?? '[]'),
         ],
       ),
     );
   }
 }
 
-// ─── SMALL REUSABLE WIDGETS ────────────────────────────────────────────────────
 class _GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets? padding;
@@ -1309,15 +1308,18 @@ class _PrimaryButton extends StatelessWidget {
                   strokeWidth: 2, color: Colors.black))
           : Icon(icon, size: 16),
       label: Text(label,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+          style: const TextStyle(
+              fontWeight: FontWeight.w600, fontSize: 13)),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.accent,
         foregroundColor: Colors.black,
         disabledBackgroundColor: AppColors.border,
         disabledForegroundColor: AppColors.textDim,
         padding: EdgeInsets.symmetric(
-            vertical: compact ? 12 : 14, horizontal: compact ? 16 : 20),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            vertical: compact ? 12 : 14,
+            horizontal: compact ? 16 : 20),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8)),
         elevation: 0,
       ),
     );
@@ -1339,8 +1341,10 @@ class _ClearButton extends StatelessWidget {
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.red,
         side: BorderSide(color: AppColors.red.withOpacity(0.4)),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
+        padding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(7)),
       ),
     );
   }
@@ -1352,7 +1356,9 @@ class _IconAction extends StatelessWidget {
   final VoidCallback onTap;
 
   const _IconAction(
-      {required this.icon, required this.tooltip, required this.onTap});
+      {required this.icon,
+      required this.tooltip,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -1395,29 +1401,36 @@ class _StyledTextField extends StatelessWidget {
       controller: controller,
       onSubmitted: onSubmit,
       onChanged: onChanged,
-      style: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
+      style:
+          const TextStyle(color: AppColors.textPrimary, fontSize: 13),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.textDim, fontSize: 13),
+        hintStyle:
+            const TextStyle(color: AppColors.textDim, fontSize: 13),
         prefixIcon: prefix != null
             ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10),
                 child: prefix)
             : null,
-        prefixIconConstraints: const BoxConstraints(minWidth: 0),
+        prefixIconConstraints:
+            const BoxConstraints(minWidth: 0),
         filled: true,
         fillColor: AppColors.bg,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12, vertical: 11),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: AppColors.border)),
+            borderSide:
+                const BorderSide(color: AppColors.border)),
         enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: AppColors.border)),
+            borderSide:
+                const BorderSide(color: AppColors.border)),
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: AppColors.accent)),
+            borderSide:
+                const BorderSide(color: AppColors.accent)),
       ),
     );
   }
@@ -1437,8 +1450,8 @@ class _StatusDot extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-              color: (pass ? AppColors.green : AppColors.red)
-                  .withOpacity(0.5),
+              color:
+                  (pass ? AppColors.green : AppColors.red).withOpacity(0.5),
               blurRadius: 5)
         ],
       ),
@@ -1455,11 +1468,12 @@ class _StatusChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: (pass ? AppColors.green : AppColors.red).withOpacity(0.1),
+        color:
+            (pass ? AppColors.green : AppColors.red).withOpacity(0.1),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-            color:
-                (pass ? AppColors.green : AppColors.red).withOpacity(0.3)),
+            color: (pass ? AppColors.green : AppColors.red)
+                .withOpacity(0.3)),
       ),
       child: Text(
         pass ? 'PASS' : 'FAIL',
@@ -1610,8 +1624,8 @@ class _ErrorBanner extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(message,
-                style:
-                    const TextStyle(color: AppColors.red, fontSize: 12)),
+                style: const TextStyle(
+                    color: AppColors.red, fontSize: 12)),
           ),
         ],
       ),
@@ -1626,6 +1640,7 @@ SnackBar _snackBar(String msg, Color color) => SnackBar(
       backgroundColor: color,
       duration: const Duration(seconds: 2),
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       margin: const EdgeInsets.all(16),
     );
