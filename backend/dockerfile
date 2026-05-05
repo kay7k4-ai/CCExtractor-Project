@@ -1,26 +1,49 @@
 FROM python:3.11-slim
 
-# Install ccextractor via apt
+# Install build dependencies for CCExtractor
 RUN apt-get update && apt-get install -y \
-    ccextractor \
+    git \
+    build-essential \
+    cmake \
+    libglew-dev \
+    libglfw3-dev \
+    libgpac-dev \
+    libhw-dev \
+    pkg-config \
+    zlib1g-dev \
+    libtesseract-dev \
+    libleptonica-dev \
+    clang \
+    curl \
+    wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Build CCExtractor from source
+RUN git clone --depth=1 https://github.com/CCExtractor/ccextractor.git /tmp/ccextractor \
+    && cd /tmp/ccextractor/linux \
+    && mkdir -p build \
+    && cd build \
+    && cmake .. \
+    && make -j$(nproc) \
+    && cp ccextractor /usr/local/bin/ccextractor \
+    && chmod +x /usr/local/bin/ccextractor \
+    && cd / \
+    && rm -rf /tmp/ccextractor
+
+# Verify it works
+RUN ccextractor --version || true
+
 WORKDIR /app
 
-# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend source files
 COPY main.py .
 COPY compare.py .
 COPY database.py .
-
-# Copy test files (includes expected/sample.srt)
 COPY test_files/ ./test_files/
 
-# Create working folders
 RUN mkdir -p uploads outputs
 
 EXPOSE 8000
