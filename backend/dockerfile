@@ -1,21 +1,30 @@
 FROM python:3.10-slim
 
-# System deps
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
     ffmpeg \
+    wget \
+    pkg-config \
+    libcurl4-openssl-dev \
+    zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install ccextractor properly
+# Install CCExtractor (CORRECT WAY)
 RUN git clone https://github.com/CCExtractor/ccextractor.git \
-    && cd ccextractor/linux \
-    && ./build
+    && cd ccextractor/src \
+    && make \
+    && cp ccextractor /usr/local/bin/
 
+# Set working directory
 WORKDIR /app
 
+# Copy project files
 COPY . .
 
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Start server
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
