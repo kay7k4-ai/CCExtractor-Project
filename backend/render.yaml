@@ -1,1 +1,6 @@
-buildCommand: ./build.sh
+services:
+  - type: web
+    name: ccextractor-api
+    env: docker
+    plan: free
+    autoDeploy: true
