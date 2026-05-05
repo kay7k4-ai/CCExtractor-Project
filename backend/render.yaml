@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: ccextractor-api
-    env: docker
-    plan: free
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
-    autoDeploy: true
