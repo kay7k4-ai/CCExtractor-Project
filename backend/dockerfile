@@ -1,20 +1,16 @@
 FROM python:3.10-slim
 
-# Install dependencies needed to build ccextractor
+# System deps
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
-    cmake \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# Clone and build ccextractor
+# Install ccextractor properly
 RUN git clone https://github.com/CCExtractor/ccextractor.git \
-    && cd ccextractor \
-    && mkdir build && cd build \
-    && cmake .. \
-    && make \
-    && make install
+    && cd ccextractor/linux \
+    && ./build
 
 WORKDIR /app
 
