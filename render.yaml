@@ -4,6 +4,6 @@ services:
     env: python
     plan: free
     rootDir: backend
-    buildCommand: chmod +x build.sh && ./build.sh
+    buildCommand: pip install -r requirements.txt && wget -q https://github.com/CCExtractor/ccextractor/releases/download/v0.94/ccextractor.linux -O /usr/local/bin/ccextractor && chmod +x /usr/local/bin/ccextractor
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     autoDeploy: true
