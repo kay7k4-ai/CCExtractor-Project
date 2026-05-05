@@ -1,1 +1,1 @@
-apt-get update && apt-get install -y ccextractor
+buildCommand: ./build.sh
