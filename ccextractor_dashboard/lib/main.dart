@@ -4,12 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 🔧 CONFIG — change this ONE line when deploying
-// Local:    'http://127.0.0.1:8000'
-// Deployed: 'https://your-app.onrender.com'
-const String kBaseUrl = 'http://127.0.0.1:8000';
-// ─────────────────────────────────────────────────────────────────────────────
+const String kBaseUrl = 'https://ccextractor-backend.onrender.com/';
 
 void main() {
   runApp(const CCExtractorApp());
