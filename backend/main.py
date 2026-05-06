@@ -24,7 +24,7 @@ os.makedirs("outputs", exist_ok=True)
 EXPECTED_PATH = "test_files/expected/sample.srt"
 
 # ✅ Look for ccextractor in current directory first, then system PATH
-CC_BINARY = "./ccextractor" if os.path.exists("./ccextractor") else "ccextractor"
+CC_BINARY = "./ccextractor_bin" if os.path.exists("./ccextractor_bin") else "ccextractor"
 
 
 def check_ccextractor():
