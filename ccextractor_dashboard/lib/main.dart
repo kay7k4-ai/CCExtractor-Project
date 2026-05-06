@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 
-const String kBaseUrl = 'https://ccextractor-backend.onrender.com/';
+const String kBaseUrl = 'https://ccextractor-backend.onrender.com';
 
 void main() {
   runApp(const CCExtractorApp());
