@@ -21,13 +21,21 @@ app.add_middleware(
 os.makedirs("uploads", exist_ok=True)
 os.makedirs("outputs", exist_ok=True)
 
-# ✅ Correct path matching your folder structure
 EXPECTED_PATH = "test_files/expected/sample.srt"
+
+# ✅ Look for ccextractor in current directory first, then system PATH
+CC_BINARY = "./ccextractor" if os.path.exists("./ccextractor") else "ccextractor"
 
 
 def check_ccextractor():
-    result = subprocess.run(["which", "ccextractor"], capture_output=True)
-    return result.returncode == 0
+    try:
+        result = subprocess.run(
+            [CC_BINARY, "--version"],
+            capture_output=True, timeout=10
+        )
+        return True
+    except Exception:
+        return False
 
 
 @app.get("/")
@@ -35,6 +43,7 @@ def home():
     return {
         "message": "Server is running",
         "ccextractor_available": check_ccextractor(),
+        "ccextractor_path": CC_BINARY,
         "expected_file_exists": os.path.exists(EXPECTED_PATH)
     }
 
@@ -43,7 +52,7 @@ def home():
 async def run_test(file: UploadFile = File(...)):
     if not check_ccextractor():
         raise HTTPException(status_code=500,
-            detail="ccextractor not found on server.")
+            detail=f"ccextractor not found at {CC_BINARY}")
 
     if not os.path.exists(EXPECTED_PATH):
         raise HTTPException(status_code=500,
@@ -58,7 +67,7 @@ async def run_test(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
 
         subprocess.run(
-            ["ccextractor", input_path, "-o", output_path],
+            [CC_BINARY, input_path, "-o", output_path],
             capture_output=True, text=True, timeout=120
         )
 
@@ -88,7 +97,7 @@ async def run_test(file: UploadFile = File(...)):
 async def run_batch(files: Annotated[List[UploadFile], File(description="Upload multiple video files")]):
     if not check_ccextractor():
         raise HTTPException(status_code=500,
-            detail="ccextractor not found on server.")
+            detail=f"ccextractor not found at {CC_BINARY}")
 
     results_summary = []
     passed = 0
@@ -104,7 +113,7 @@ async def run_batch(files: Annotated[List[UploadFile], File(description="Upload 
                 shutil.copyfileobj(file.file, buffer)
 
             subprocess.run(
-                ["ccextractor", input_path, "-o", output_path],
+                [CC_BINARY, input_path, "-o", output_path],
                 capture_output=True, text=True, timeout=120
             )
 
