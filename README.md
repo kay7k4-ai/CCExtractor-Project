@@ -3,6 +3,8 @@
 An automated regression testing system for [CCExtractor](https://github.com/CCExtractor/ccextractor) — upload video/subtitle files, run extraction, compare against expected output, and view results in a Flutter dashboard.
 
 ---
+## 🚀 Live Demo
+[Click here to try it live](https://cc-extractor.netlify.app/)
 
 ## Project Structure
 
